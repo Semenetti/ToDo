@@ -1,0 +1,15 @@
+<template>
+    <lightning-card title="Todo List">
+        <template if:true={todos}>
+
+            <!--Find-->
+            <lightning-input label="Find By Name" onchange={handleFind} type="search"></lightning-input>
+
+            <!--List-->
+            <template for:each={todos} for:item=todo>
+                <c-todo-item key={todo.Id} todo={todo} all-subtodos={subtodos}></c-todo-item>
+            </template>
+            
+        </template>
+    </lightning-card>
+</template>
