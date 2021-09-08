@@ -1,5 +1,5 @@
 public with sharing class StartSchedule {
-    public start() {
+    public static void start() {
         // awesome code here soon
     }
 }

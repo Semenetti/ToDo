@@ -2,7 +2,7 @@ public with sharing class DeleteOldTodos_Batch implements Database.Batchable<sOb
   public Integer recordsProcessed = 0;
 
   public Database.QueryLocator start(Database.BatchableContext bc) {
-    return Database.QueryLocator(
+    return Database.getQueryLocator(
       'SELECT Id, Name, Completion_Date__c FROM Todo__c'
     );
   }
