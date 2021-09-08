@@ -10,15 +10,20 @@ public with sharing class DeleteOldTodos_Batch implements Database.Batchable<sOb
   public void execute(Database.BatchableContext bc, List<Todo__c> records) {
     List<Todo__c> listToDelete = new List<Todo__c>();
     integer deleteTerm = TodoHelper.getDeletionTerm();
+    Date todayDate = Date.today();
 
     for (Todo__c todo : records) {
-      if (todo.Completion_Date__c.daysBetween(Date.TODAY()) >= deleteTerm) {
+      if (
+        todo.Completion_Date__c <> null &&
+        todo.Completion_Date__c.daysBetween(todayDate) > deleteTerm
+      ) {
         listToDelete.add(todo);
         recordsProcessed = recordsProcessed + 1;
       }
     }
-
-    delete listToDelete;
+    if (listToDelete.size() > 0) {
+      delete listToDelete;
+    }
   }
 
   public void finish(Database.BatchableContext bc) {
