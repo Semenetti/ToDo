@@ -1,6 +1,26 @@
 <template>
-    <p>{todo.Name}</p>
-    <template for:each={subtodos} for:item=subtodo>
-        <p key={subtodo.Id} style="padding-left: 10px;">{subtodo.Name}</p>
-    </template>
+
+    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
+        
+        <lightning-button-icon 
+            icon-name={listIcon} 
+            size="small"
+            variant="bare"
+            onclick={viewHideSubtodos} 
+            disabled={listIsEmpty}
+            style="margin-top: -7px;"
+        ></lightning-button-icon>
+
+        <span class="todoFont"> {todo.Name} </span>
+        
+        <div hidden={listIsHidden}>
+            <template for:each={subtodos} for:item=subtodo>
+                <div key={subtodo.Id} class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
+                    <p>{subtodo.Name}</p>
+                </div>
+            </template>
+        </div>    
+
+    </div>
+
 </template>
