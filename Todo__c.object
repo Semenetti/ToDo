@@ -326,7 +326,7 @@
             <picklist>Category__c</picklist>
             <values>
                 <fullName>Other</fullName>
-                <default>false</default>
+                <default>true</default>
             </values>
             <values>
                 <fullName>Personal</fullName>
@@ -339,9 +339,9 @@
         </picklistValues>
     </recordTypes>
     <recordTypes>
-        <fullName>Meetings</fullName>
+        <fullName>Meeting</fullName>
         <active>true</active>
-        <label>Meetings</label>
+        <label>Meeting</label>
         <picklistValues>
             <picklist>Category__c</picklist>
             <values>
@@ -350,14 +350,10 @@
             </values>
             <values>
                 <fullName>Offline</fullName>
-                <default>false</default>
+                <default>true</default>
             </values>
             <values>
                 <fullName>Online</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Other</fullName>
                 <default>false</default>
             </values>
         </picklistValues>
@@ -378,7 +374,7 @@
             </values>
             <values>
                 <fullName>Other</fullName>
-                <default>false</default>
+                <default>true</default>
             </values>
             <values>
                 <fullName>Wine</fullName>
