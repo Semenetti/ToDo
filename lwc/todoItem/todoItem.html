@@ -1,0 +1,6 @@
+<template>
+    <p>{todo.Name}</p>
+    <template for:each={subtodos} for:item=subtodo>
+        <p key={subtodo.Id} style="padding-left: 10px;">{subtodo.Name}</p>
+    </template>
+</template>

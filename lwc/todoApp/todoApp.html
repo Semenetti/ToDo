@@ -1,5 +1,7 @@
 <!-- Todo App -->
 <template>
-    <c-todo-new ></c-todo-new>
-    <c-todo-list ></c-todo-list>
+    <lightning-card>
+        <c-todo-new-button onsave={handleSave} oncancel={handleCancel}></c-todo-new-button>
+        <c-todo-edit-button record-id='a005g0000302qJoAAI'></c-todo-edit-button>
+    </lightning-card>
 </template>
