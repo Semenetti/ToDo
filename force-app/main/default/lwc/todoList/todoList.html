@@ -1,0 +1,31 @@
+<template>
+    <div onrefreshtodos={refreshTodos} onrefreshsubtodos={refreshSubtodos}>
+
+        <lightning-card title="Todo List">
+            
+            <lightning-button-icon  
+                icon-name="utility:add" 
+                variant="border-filled" 
+                alternative-text="Create new Todo" 
+                slot="actions"
+                onclick={refreshList}
+            ></lightning-button-icon>   
+
+
+            <template if:true={todos}>
+
+                <!--Find-->
+                <lightning-input label="Find By Name" onchange={handleFind} type="search" class="slds-m-around--x-small"></lightning-input>
+
+                <!--List-->
+                <template for:each={todos} for:item=todo>
+                    <c-todo-item key={todo.Id} todo={todo} all-subtodos={subtodos}></c-todo-item>
+                </template>
+                
+            </template>
+      
+
+        </lightning-card>
+    </div>
+    
+</template>

@@ -1,0 +1,21 @@
+.todoFont{
+    font-size: 16px;
+}
+
+lightning-button-icon{
+    padding-left: 3px;
+}
+
+.subtodoCheckBtn{
+    border-radius: 50%;
+}
+
+.showListBtn{
+    position: relative;
+    top: -3px;
+}
+
+.subtodocheckbox{
+    position: relative;
+    left: 15px;
+}
