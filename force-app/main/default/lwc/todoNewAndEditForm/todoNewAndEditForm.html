@@ -1,0 +1,103 @@
+<!-- Todo New And Edit Form -->
+<template>
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+
+        <div class="slds-grid">
+            <div class="slds-col slds-size_8-of-12">
+
+                <template if:true={recordTypeOK}>
+                    <p></p>
+                    <lightning-input type="checkbox" label="Priority task" name="inputPriority"
+                                     checked={todo.isPriorityTaskC}
+                                     onchange={handleChangeIsPriority}></lightning-input>
+                </template>
+
+                <template if:true={recordTypeOK}>
+                    <lightning-input type="text" label="Enter todo Name" value={todo.name}
+                                     onchange={handleChangeName}></lightning-input>
+                </template>
+
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <template if:true={picklistValues.data}>
+                            <lightning-radio-group label="Select category"
+                                                   options={radioOptionsCategories}
+                                                   type="radio"
+                                                   value={todo.categoryC}
+                                                   onchange={handleChangeCategory}
+                            ></lightning-radio-group>
+                        </template>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2">
+                        <template if:true={showTime}>
+                            <p></p>
+                            <lightning-input type="time" name="input3"
+                                             label="Time field with placeholder"
+                                             placeholder="type here..." value={todo.timeC}
+                                             onchange={handleChangeTime}></lightning-input>
+                        </template>
+                    </div>
+                </div>
+
+
+                <template if:true={recordTypeOK}>
+                    <lightning-input type="text" label="Description" value={todo.descriptionC}
+                                     onchange={handleChangeDescription}></lightning-input>
+                </template>
+
+            </div>
+
+            <div class="slds-col slds-size_1-of-12"></div>
+
+            <div class="slds-col slds-size_3-of-12">
+
+                <template if:true={recordTypeOK}>
+                    <lightning-input type="checkbox" label="Is periodic task" name="input1"
+                                     checked={todo.isPeriodicTaskC}
+                                     onchange={handleChangeIsPeriodic}></lightning-input>
+                </template>
+
+
+                <template if:true={showDaysOfTheWeek}>
+                    <lightning-checkbox-group name="checkboxDaysOfWeek"
+                                              label="Select days of week"
+                                              options={checkboxOptionsWeek}
+                                              value={value}
+                                              onchange={handleChangeDaysOfWeek}></lightning-checkbox-group>
+                </template>
+
+                <template if:false={showDaysOfTheWeek}>
+                    <lightning-input type="date" name="inputdate" label="Completion date:"
+                                     value={todo.completionDateC}
+                                     onchange={handleChangeCompletion}></lightning-input>
+                </template>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+
+    <footer class="slds-modal__footer">
+
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-2" align=left>
+                <template if:true={recordTypeOK}>
+                    <button class="slds-button slds-button_brand" onclick={saveRecordAddChecklist}>Save & add
+                        checklist
+                    </button>
+                </template>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2">
+                <button class="slds-button slds-button_neutral" onclick={cancel}>Cancel</button>
+                <template if:true={recordTypeOK}>
+                    <button class="slds-button slds-button_brand" onclick={saveRecord}>Save</button>
+                </template>
+            </div>
+        </div>
+
+    </footer>
+
+</template>

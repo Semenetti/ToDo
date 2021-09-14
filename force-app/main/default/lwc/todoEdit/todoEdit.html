@@ -1,0 +1,28 @@
+<!-- Todo New -->
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+             aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container"> <!-- уменьшает ширину и ставит окно в середину экрана-->
+
+            <!-- заголовок -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{headerText}</h2>
+            </header>
+
+            <!-- ввод To Do -->
+            <template if:true={recordTypes.data}>
+                <template if:true={todoRecord.data}>
+                    <template if:true={todoIsReady}>
+                        <c-todo-new-and-edit-form record-type-id-value={todo.recordTypeIdC}
+                                                  incoming-todo={todo}
+                                                  onsave={handleSave}
+                                                  oncancel={handleCancel}></c-todo-new-and-edit-form>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </section>
+
+    <!-- выкидывает окно -->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

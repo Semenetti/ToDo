@@ -1,0 +1,6 @@
+<template>
+    <lightning-button label="Edit" onclick={showModal}></lightning-button>
+    <template if:true={openModal}>
+        <c-todo-edit record-id={recordId} onsave={handleSave} oncancel={handleCancel}></c-todo-edit>
+    </template>
+</template>
