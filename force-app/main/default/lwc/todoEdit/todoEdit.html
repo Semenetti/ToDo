@@ -12,11 +12,14 @@
             <!-- ввод To Do -->
             <template if:true={recordTypes.data}>
                 <template if:true={todoRecord.data}>
-                    <template if:true={todoIsReady}>
-                        <c-todo-new-and-edit-form record-type-id-value={todo.recordTypeIdC}
-                                                  incoming-todo={todo}
-                                                  onsave={handleSave}
-                                                  oncancel={handleCancel}></c-todo-new-and-edit-form>
+                    <template if:true={recordTypeLabelIsReady}>
+                        <template if:true={todoIsReady}>
+                            <c-todo-new-and-edit-form record-type-id={recordTypeIdValue}
+                                                      record-type-label={recordTypeLabel}
+                                                      incoming-todo={todo}
+                                                      onsave={handleSave}
+                                                      oncancel={handleCancel}></c-todo-new-and-edit-form>
+                        </template>
                     </template>
                 </template>
             </template>

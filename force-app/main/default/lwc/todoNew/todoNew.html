@@ -22,7 +22,7 @@
                                     <lightning-radio-group name="radioGroup"
                                                            label=""
                                                            options={radioOptionsRecordTypes}
-                                                           value={todo.recordTypeIdValue}
+                                                           value={recordTypeId}
                                                            type="radio"
                                                            onchange={handleChangeRecordType}
                                     ></lightning-radio-group>
@@ -42,7 +42,7 @@
 
                 <!-- ввод To Do -->
                 <template if:true={recordTypeOK}>
-                    <c-todo-new-and-edit-form record-type-id-value={recordTypeIdValue}
+                    <c-todo-new-and-edit-form record-type-id={recordTypeId}
                                               incoming-todo={todo}
                                               record-type-label = {recordTypeLabel}
                                               onsave={handleSave}

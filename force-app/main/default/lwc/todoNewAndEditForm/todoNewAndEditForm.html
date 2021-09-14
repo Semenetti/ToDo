@@ -8,12 +8,12 @@
                 <template if:true={recordTypeOK}>
                     <p></p>
                     <lightning-input type="checkbox" label="Priority task" name="inputPriority"
-                                     checked={todo.isPriorityTaskC}
+                                     checked={isPriorityValue}
                                      onchange={handleChangeIsPriority}></lightning-input>
                 </template>
 
                 <template if:true={recordTypeOK}>
-                    <lightning-input type="text" label="Enter todo Name" value={todo.name}
+                    <lightning-input type="text" label="Enter todo Name" value={nameValue}
                                      onchange={handleChangeName}></lightning-input>
                 </template>
 
@@ -23,7 +23,7 @@
                             <lightning-radio-group label="Select category"
                                                    options={radioOptionsCategories}
                                                    type="radio"
-                                                   value={todo.categoryC}
+                                                   value={categoryValue}
                                                    onchange={handleChangeCategory}
                             ></lightning-radio-group>
                         </template>
@@ -34,7 +34,7 @@
                             <p></p>
                             <lightning-input type="time" name="input3"
                                              label="Time field with placeholder"
-                                             placeholder="type here..." value={todo.timeC}
+                                             placeholder="type here..." value={timeValue}
                                              onchange={handleChangeTime}></lightning-input>
                         </template>
                     </div>
@@ -42,7 +42,7 @@
 
 
                 <template if:true={recordTypeOK}>
-                    <lightning-input type="text" label="Description" value={todo.descriptionC}
+                    <lightning-input type="text" label="Description" value={descriptionValue}
                                      onchange={handleChangeDescription}></lightning-input>
                 </template>
 
@@ -54,7 +54,7 @@
 
                 <template if:true={recordTypeOK}>
                     <lightning-input type="checkbox" label="Is periodic task" name="input1"
-                                     checked={todo.isPeriodicTaskC}
+                                     checked={isPeriodicValue}
                                      onchange={handleChangeIsPeriodic}></lightning-input>
                 </template>
 
@@ -69,7 +69,7 @@
 
                 <template if:false={showDaysOfTheWeek}>
                     <lightning-input type="date" name="inputdate" label="Completion date:"
-                                     value={todo.completionDateC}
+                                     value={completionValue}
                                      onchange={handleChangeCompletion}></lightning-input>
                 </template>
 

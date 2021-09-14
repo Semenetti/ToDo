@@ -5,6 +5,7 @@ import {createRecord} from 'lightning/uiRecordApi';
 import {getPicklistValues} from "lightning/uiObjectInfoApi";
 import TODO_OBJECT from '@salesforce/schema/Todo__c';
 // ------------------------
+import ID_FIELD from '@salesforce/schema/Todo__c.Id';
 import NAME_FIELD from '@salesforce/schema/Todo__c.Name';
 import CATEGORY_FIELD from '@salesforce/schema/Todo__c.Category__c';
 import COMPLETION_FIELD from '@salesforce/schema/Todo__c.Completion_Date__c';
@@ -12,19 +13,19 @@ import DAYS_OF_WEEK_FIELD from '@salesforce/schema/Todo__c.Days_of_Week__c';
 import DESCRIPTION_FIELD from '@salesforce/schema/Todo__c.Description__c';
 import IS_PERIODIC_FIELD from '@salesforce/schema/Todo__c.Is_Periodic_Task__c';
 import IS_PRIORITY_FIELD from '@salesforce/schema/Todo__c.Is_Priority_Task__c';
-import RECORD_TYPE_ID_FIELD from '@salesforce/schema/Todo__c.RecordTypeId';
 import TIME_FIELD from '@salesforce/schema/Todo__c.Time__c';
+import RECORD_TYPE_ID_FIELD from '@salesforce/schema/Todo__c.RecordTypeId';
 import IS_DONE_FIELD from '@salesforce/schema/Todo__c.Is_Done__c';
 
 
 export default class TodoNewAndEditForm extends LightningElement {
 
-    @api recordTypeIdValue;
+    @api recordTypeId;
     @api incomingTodo;
     @api recordTypeLabel;
 
     @wire(getPicklistValues, {
-        recordTypeId: '$recordTypeIdValue',
+        recordTypeId: '$recordTypeId',
         fieldApiName: CATEGORY_FIELD
     })
     picklistValues;
@@ -34,8 +35,7 @@ export default class TodoNewAndEditForm extends LightningElement {
     week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     showDaysOfTheWeek;
 
-    todo = {
-    }
+    todo = {}
 
 
     connectedCallback() {
@@ -46,12 +46,14 @@ export default class TodoNewAndEditForm extends LightningElement {
             this.todo[key] = this.incomingTodo[key];
         });
 
-        this.showDaysOfTheWeek = this.todo.isPeriodicTaskC;
+        this.showDaysOfTheWeek = this.todo[IS_PERIODIC_FIELD.fieldApiName];
 
-        this.week.forEach(day => {
-            if (this.todo.daysOfWeekC.includes(day))
-                this.value.push(day);
-        })
+        if (this.todo[DAYS_OF_WEEK_FIELD.fieldApiName])
+            this.week.forEach(day => {
+                if (this.todo[DAYS_OF_WEEK_FIELD.fieldApiName].includes(day))
+                    this.value.push(day);
+            })
+
     }
 
 // button actions
@@ -66,11 +68,12 @@ export default class TodoNewAndEditForm extends LightningElement {
     }
 
     saveRecord() {
-        if ((!this.todo.name) || (!this.todo.isPeriodicTaskC && !this.todo.completionDateC) || (this.todo.isPeriodicTaskC && !this.todo.daysOfWeekC)) {
+        if ((!this.todo[NAME_FIELD.fieldApiName]) || (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName]) || (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName])) {
             let message = '';
-            if (!this.todo.name) message = 'Todos name can not be empty. ';
-            if (!this.todo.isPeriodicTaskC && !this.todo.completionDateC) message = message + 'Please, fill completion date. ';
-            if (this.todo.isPeriodicTaskC && !this.todo.daysOfWeekC) message = message + 'Please, select at least one day of the week.';
+            if (!this.todo[NAME_FIELD.fieldApiName]) message = 'Todos name can not be empty. ';
+            if (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName])
+                message = message + 'Please, fill completion date. ';
+            if (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName]) message = message + 'Please, select at least one day of the week.';
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error creating record',
@@ -79,51 +82,48 @@ export default class TodoNewAndEditForm extends LightningElement {
                 })
             );
         } else {
-            const fields = {};
-            fields[NAME_FIELD.fieldApiName] = this.todo.name;
-            fields[CATEGORY_FIELD.fieldApiName] = this.todo.categoryC;
-            fields[DESCRIPTION_FIELD.fieldApiName] = this.todo.descriptionC;
-            fields[IS_PERIODIC_FIELD.fieldApiName] = this.todo.isPeriodicTaskC;
-            fields[IS_PRIORITY_FIELD.fieldApiName] = this.todo.isPriorityTaskC;
-            fields[RECORD_TYPE_ID_FIELD.fieldApiName] = this.todo.recordTypeIdC;
-            if (!this.todo.isPeriodicTaskC) fields[COMPLETION_FIELD.fieldApiName] = this.todo.completionDateC;
-            if (this.todo.isPeriodicTaskC) fields[DAYS_OF_WEEK_FIELD.fieldApiName] = this.todo.daysOfWeekC;
-            fields[TIME_FIELD.fieldApiName] = this.todo.timeC;
-            fields[IS_DONE_FIELD.fieldApiName] = false; //
+            if (!this.todo[ID_FIELD.fieldApiName]) {
+                const fields = this.todo;
 
-            console.log('*** fields ***');
-            console.log(fields);
-            console.log('*** this.todo ***');
-            console.log(this.todo);
-            console.log('*** this.incomingTodo ***');
-            console.log(this.incomingTodo);
+                console.log('*** fields ***');
+                console.log(fields);
 
-            const recordInput = {apiName: TODO_OBJECT.objectApiName, fields};
-            createRecord(recordInput)
-                .then((todo) => {
-                    this.todoId = todo.id;
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Success',
-                            message: 'Todo "' + this.todo.name + '" created',
-                            variant: 'success'
-                        })
-                    );
-                    const event = new CustomEvent('save', {detail: ''});
-                    this.dispatchEvent(event);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Error creating record',
-                            message: '', // reduceErrors(error).join(', ')
-                            variant: 'error'
-                        })
-                    );
-                    const event = new CustomEvent('cancel', {detail: ''});
-                    this.dispatchEvent(event);
-                });
+                const recordInput = {apiName: TODO_OBJECT.objectApiName, fields};
+                createRecord(recordInput)
+                    .then((todo) => {
+                        // this.todoId = todo.id;
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Success',
+                                message: 'Todo "' + this.todo[NAME_FIELD.fieldApiName] + '" created',
+                                variant: 'success'
+                            })
+                        );
+                        const event = new CustomEvent('save', {detail: ''});
+                        this.dispatchEvent(event);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Error creating record',
+                                message: '', // reduceErrors(error).join(', ')
+                                variant: 'error'
+                            })
+                        );
+                        const event = new CustomEvent('cancel', {detail: ''});
+                        this.dispatchEvent(event);
+                    });
+            } else {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Record update here',
+                        message: '*not implemented yet',
+                        variant: 'success'
+                    })
+                )
+
+            }
         }
     }
 
@@ -148,9 +148,38 @@ export default class TodoNewAndEditForm extends LightningElement {
         return options;
     }
 
+// form rendering values
+    get isPriorityValue() {
+        return this.todo[IS_PRIORITY_FIELD.fieldApiName];
+    }
+
+    get nameValue() {
+        return this.todo[NAME_FIELD.fieldApiName];
+    }
+
+    get categoryValue() {
+        return this.todo[CATEGORY_FIELD.fieldApiName];
+    }
+
+    get timeValue() {
+        return this.todo[TIME_FIELD.fieldApiName];
+    }
+
+    get completionValue() {
+        return this.todo[COMPLETION_FIELD.fieldApiName];
+    }
+
+    get descriptionValue() {
+        return this.todo[DESCRIPTION_FIELD.fieldApiName];
+    }
+
+    get isPeriodicValue() {
+        return this.todo[IS_PERIODIC_FIELD.fieldApiName];
+    }
+
 // form rendering booleans
     get recordTypeOK() {
-        if (this.recordTypeIdValue) return true;
+        if (this.recordTypeId) return true;
         return false;
     }
 
@@ -161,39 +190,36 @@ export default class TodoNewAndEditForm extends LightningElement {
 
 // handlers
     handleChangeName(e) {
-        this.todo.name = e.detail.value;
+        this.todo[NAME_FIELD.fieldApiName] = e.detail.value;
     }
 
     handleChangeCategory(e) {
-        this.todo.categoryC = e.detail.value;
-        console.log('@@@@');
-        console.log(e.detail.value);
-        console.log(this.radioOptionsCategories);
+        this.todo[CATEGORY_FIELD.fieldApiName] = e.detail.value;
     }
 
     handleChangeCompletion(e) {
-        this.todo.completionDateC = e.detail.value;
+        this.todo[COMPLETION_FIELD.fieldApiName] = e.detail.value;
     }
 
     handleChangeDaysOfWeek(e) {
         this.value = e.detail.value;
-        this.todo.daysOfWeekC = this.value.join(', ');
+        this.todo[DAYS_OF_WEEK_FIELD.fieldApiName] = this.value.join(', ');
     }
 
     handleChangeDescription(e) {
-        this.todo.descriptionC = e.detail.value;
+        this.todo[DESCRIPTION_FIELD.fieldApiName] = e.detail.value;
     }
 
     handleChangeIsPeriodic(e) {
-        this.todo.isPeriodicTaskC = !this.todo.isPeriodicTaskC;
-        this.showDaysOfTheWeek = this.todo.isPeriodicTaskC;
+        this.todo[IS_PERIODIC_FIELD.fieldApiName] = !this.todo[IS_PERIODIC_FIELD.fieldApiName];
+        this.showDaysOfTheWeek = this.todo[IS_PERIODIC_FIELD.fieldApiName];
     }
 
     handleChangeIsPriority(e) {
-        this.todo.isPriorityTaskC = !this.todo.isPriorityTaskC;
+        this.todo[IS_PRIORITY_FIELD.fieldApiName] = !this.todo[IS_PRIORITY_FIELD.fieldApiName];
     }
 
     handleChangeTime(e) {
-        this.todo.timeC = e.detail.value;
+        this.todo[TIME_FIELD.fieldApiName] = e.detail.value;
     }
 }

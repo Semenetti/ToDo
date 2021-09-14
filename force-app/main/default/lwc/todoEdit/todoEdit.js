@@ -3,6 +3,7 @@ import {getObjectInfo} from 'lightning/uiObjectInfoApi';
 import { getRecord } from 'lightning/uiRecordApi';
 import TODO_OBJECT from '@salesforce/schema/Todo__c';
 // ------------------------
+import ID_FIELD from '@salesforce/schema/Todo__c.Id';
 import NAME_FIELD from '@salesforce/schema/Todo__c.Name';
 import CATEGORY_FIELD from '@salesforce/schema/Todo__c.Category__c';
 import COMPLETION_FIELD from '@salesforce/schema/Todo__c.Completion_Date__c';
@@ -17,12 +18,12 @@ import IS_DONE_FIELD from '@salesforce/schema/Todo__c.Is_Done__c';
 
 export default class TodoEdit extends LightningElement {
     @api recordId;
-
     recordTypeLabel;
     headerText = 'Edit todo';
-    todo;
+    todo = {};
 
     @wire(getRecord, { recordId: '$recordId', fields: [
+            ID_FIELD,
             NAME_FIELD,
             CATEGORY_FIELD,
             COMPLETION_FIELD,
@@ -39,24 +40,49 @@ export default class TodoEdit extends LightningElement {
     @wire(getObjectInfo, {objectApiName: TODO_OBJECT})
     recordTypes;
 
-    get todoIsReady () {
-        console.log('%%% this.todoRecord.data.fields');
-        console.log(this.todoRecord.data.fields);
-        console.log('%%% this.recordTypes.data.recordTypeInfos');
-        console.log(this.recordTypes.data.recordTypeInfos);
+    get recordTypeLabelIsReady () {
         if (this.todoRecord.data && this.recordTypes.data) {
             const rt = this.recordTypes.data.recordTypeInfos;
             const keys = Object.keys(rt);
             keys.forEach((key) => {
                 if (key === this.todoRecord.data.fields[RECORD_TYPE_ID_FIELD.fieldApiName].value) {
                     this.recordTypeLabel = rt[key].name;
-                    console.log('&&& this.recordTypeLabel = ' + this.recordTypeLabel);
                 }
             })
         }
-        if (this.recordTypeLabel && this.todoRecord.data) return true;
+        if (this.recordTypeLabel) return true;
         return false;
     }
+
+    get todoIsReady () {
+        // console.log('%%% this.todoRecord.data.fields');
+        // console.log(this.todoRecord.data.fields);
+
+        if (this.todoRecord.data) {
+            let i = 0;
+            const fields = this.todoRecord.data.fields;
+            console.log('fields');
+            console.log(fields);
+            const keys = Object.keys(fields);
+            console.log('keys');
+            console.log(keys);
+            keys.forEach((key) => {
+                i++;
+                console.log(i);
+                console.log(key);
+                console.log(fields[key].value);
+                if (fields[key].value) this.todo[key] = fields[key].value;
+                });
+        }
+        if (this.todo[NAME_FIELD.fieldApiName]) return true;
+        return false;
+    }
+
+
+    get recordTypeIdValue() {
+        if (this.todoRecord.data) return this.todoRecord.data.fields[RECORD_TYPE_ID_FIELD.fieldApiName].value;
+    }
+
 
     handleCancel() {
         const event = new CustomEvent('cancel', {detail: ''});
