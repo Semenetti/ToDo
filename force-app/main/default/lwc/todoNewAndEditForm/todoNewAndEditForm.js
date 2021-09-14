@@ -2,6 +2,7 @@
 import {LightningElement, wire, api} from 'lwc';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 import {createRecord} from 'lightning/uiRecordApi';
+import {updateRecord} from 'lightning/uiRecordApi';
 import {getPicklistValues} from "lightning/uiObjectInfoApi";
 import TODO_OBJECT from '@salesforce/schema/Todo__c';
 // ------------------------
@@ -21,8 +22,8 @@ import IS_DONE_FIELD from '@salesforce/schema/Todo__c.Is_Done__c';
 export default class TodoNewAndEditForm extends LightningElement {
 
     @api recordTypeId;
-    @api incomingTodo;
     @api recordTypeLabel;
+    @api incomingTodo;
 
     @wire(getPicklistValues, {
         recordTypeId: '$recordTypeId',
@@ -34,7 +35,7 @@ export default class TodoNewAndEditForm extends LightningElement {
     value = [];
     week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     showDaysOfTheWeek;
-
+    showCheckList;
     todo = {}
 
 
@@ -59,71 +60,111 @@ export default class TodoNewAndEditForm extends LightningElement {
 // button actions
 
     saveRecordAddChecklist() {
-        this.saveRecord();
+        this.processRecord(true);
+    }
+
+    duplicateRecordAddChecklist() {
+        this.todo[ID_FIELD.fieldApiName] = undefined;
+        this.processRecord(true);
     }
 
     cancel() {
-        const event = new CustomEvent('cancel', {detail: ''});
-        this.dispatchEvent(event);
+        this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
+    }
+
+    duplicateRecord() {
+        this.todo[ID_FIELD.fieldApiName] = undefined;
+        this.processRecord(false);
     }
 
     saveRecord() {
-        if ((!this.todo[NAME_FIELD.fieldApiName]) || (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName]) || (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName])) {
-            let message = '';
-            if (!this.todo[NAME_FIELD.fieldApiName]) message = 'Todos name can not be empty. ';
-            if (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName])
-                message = message + 'Please, fill completion date. ';
-            if (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName]) message = message + 'Please, select at least one day of the week.';
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Error creating record',
-                    message: message,
-                    variant: 'error'
-                })
-            );
-        } else {
+        this.processRecord(false);
+    }
+
+// helper methods
+    processRecord(needChecklist) {
+        if (this.todoIsValid) {
+            const fields = this.todo;
+
             if (!this.todo[ID_FIELD.fieldApiName]) {
-                const fields = this.todo;
-
-                console.log('*** fields ***');
-                console.log(fields);
-
                 const recordInput = {apiName: TODO_OBJECT.objectApiName, fields};
                 createRecord(recordInput)
                     .then((todo) => {
-                        // this.todoId = todo.id;
+                        this.todo[ID_FIELD.fieldApiName] = todo.id;
                         this.dispatchEvent(
                             new ShowToastEvent({
                                 title: 'Success',
-                                message: 'Todo "' + this.todo[NAME_FIELD.fieldApiName] + '" created',
+                                message: 'Todo "' + this.todo[NAME_FIELD.fieldApiName] + '", Id=' + this.todo[ID_FIELD.fieldApiName] + ' created',
                                 variant: 'success'
                             })
                         );
-                        const event = new CustomEvent('save', {detail: ''});
-                        this.dispatchEvent(event);
+                        if (needChecklist) {
+                            this.showCheckList = true;
+                        } else this.dispatchEvent(new CustomEvent('save', {detail: ''}));
                     })
                     .catch((error) => {
                         console.log(error);
                         this.dispatchEvent(
                             new ShowToastEvent({
                                 title: 'Error creating record',
-                                message: '', // reduceErrors(error).join(', ')
+                                message: 'the error is buried in the console',
                                 variant: 'error'
                             })
                         );
-                        const event = new CustomEvent('cancel', {detail: ''});
-                        this.dispatchEvent(event);
+                        this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
                     });
+
             } else {
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: 'Record update here',
-                        message: '*not implemented yet',
-                        variant: 'success'
+                const recordInput = {fields};
+                updateRecord(recordInput)
+                    .then((todo) => {
+                        this.todo[ID_FIELD.fieldApiName] = todo.id;
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Success',
+                                message: 'Todo "' + this.todo[NAME_FIELD.fieldApiName] + '", Id=' + this.todo[ID_FIELD.fieldApiName] + ' edited',
+                                variant: 'success'
+                            })
+                        );
+                        if (needChecklist) {
+                            this.showCheckList = true;
+                        } else this.dispatchEvent(new CustomEvent('save', {detail: ''}));
                     })
-                )
+                    .catch((error) => {
+                        console.log(error);
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Error creating record',
+                                message: 'the error is buried in the console',
+                                variant: 'error'
+                            })
+                        );
+                        this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
+                    });
 
             }
+        }
+    }
+
+    get todoIsValid() {
+        if ((!this.todo[NAME_FIELD.fieldApiName]) || (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName]) || (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName])) {
+            let message = '';
+            if (!this.todo[NAME_FIELD.fieldApiName])
+                message = 'Todos name can not be empty. ';
+            if (!this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[COMPLETION_FIELD.fieldApiName])
+                message = message + 'Please, fill completion date. ';
+            if (this.todo[IS_PERIODIC_FIELD.fieldApiName] && !this.todo[DAYS_OF_WEEK_FIELD.fieldApiName])
+                message = message + 'Please, select at least one day of the week.';
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error creating todo',
+                    message: message,
+                    variant: 'error'
+                })
+            );
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -148,7 +189,7 @@ export default class TodoNewAndEditForm extends LightningElement {
         return options;
     }
 
-// form rendering values
+// form filling values
     get isPriorityValue() {
         return this.todo[IS_PRIORITY_FIELD.fieldApiName];
     }
