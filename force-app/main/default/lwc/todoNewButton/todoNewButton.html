@@ -1,0 +1,6 @@
+<template>
+    <lightning-button label="New" onclick={showModal}></lightning-button>
+    <template if:true={openModal}>
+        <c-todo-new onsave={handleSave} oncancel={handleCancel}></c-todo-new>
+    </template>
+</template>

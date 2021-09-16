@@ -1,0 +1,57 @@
+<!-- Todo New -->
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+             aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container"> <!-- уменьшает ширину и ставит окно в середину экрана-->
+
+            <!-- заголовок -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{headerText}</h2>
+            </header>
+            <template if:false={todoIsReady}>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                <div class="demo-only demo--inverse" style="height:6rem;position:relative">
+                    <div role="status" class="slds-spinner slds-spinner_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                </div>
+            </template>
+            <!-- ввод To Do -->
+            <template if:true={recordTypes.data}>
+                <template if:true={todoRecord.data}>
+                    <template if:true={recordTypeLabelIsReady}>
+                        <template if:true={todoIsReady}>
+                            <c-todo-new-and-edit-form record-type-id={recordTypeIdValue}
+                                                      record-type-label={recordTypeLabel}
+                                                      incoming-todo={todo}
+                                                      onsave={handleSave}
+                                                      oncancel={handleCancel}></c-todo-new-and-edit-form>
+                        </template>
+                    </template>
+                </template>
+            </template>
+            <template if:false={todoIsReady}>
+                <footer class="slds-modal__footer">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                                <button class="slds-button slds-button_brand slds-float_left" disabled>
+                                    Save & go to
+                                    checklist
+                                </button>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <button class="slds-button slds-button_neutral" onclick={handleCancel}>Cancel</button>
+                                <button class="slds-button slds-button_brand" disabled>Save</button>
+                        </div>
+                    </div>
+                </footer>
+            </template>
+        </div>
+    </section>
+
+    <!-- выкидывает окно -->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
