@@ -43,6 +43,7 @@ export default class TodoNewAndEditForm extends LightningElement {
     todo = {}
 
 
+
     connectedCallback() {
 
         // populating todo object
@@ -83,6 +84,11 @@ export default class TodoNewAndEditForm extends LightningElement {
 
     saveRecord() {
         this.processRecord(false);
+    }
+
+    saveChecklist(){
+        this.temp=false;
+        this.dispatchEvent(new CustomEvent('save', {detail: ''}));
     }
 
 // helper methods

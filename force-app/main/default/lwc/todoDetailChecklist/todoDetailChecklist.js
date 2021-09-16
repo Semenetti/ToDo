@@ -13,6 +13,7 @@ import TODO_ID_SUBTODO from '@salesforce/schema/Subtodo__c.Todo__c';
 export default class TodoDetailChecklist extends LightningElement {
     @api incomingSubtodos
     @api incomingTodo;
+    @api isEditableChecklist;
 
     todo = {};
     subtodos;
@@ -43,6 +44,10 @@ export default class TodoDetailChecklist extends LightningElement {
 
     cancel() {
         this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
+    }
+
+    saveChecklist() {
+        this.dispatchEvent(new CustomEvent('savechecklist', {detail: ''}));
     }
 
 // form rendering booleans

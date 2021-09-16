@@ -118,8 +118,8 @@
 
     <template if:true={showCheckList}>
 
-        <c-todo-detail-checklist incoming-todo={todo} incoming-subtodos={wiredSubtodos}
-                                 oncancel={cancel}></c-todo-detail-checklist>
+        <c-todo-detail-checklist incoming-todo={todo} incoming-subtodos={wiredSubtodos} is-editable-checklist=true
+                                 oncancel={cancel} onsavechecklist={saveChecklist}></c-todo-detail-checklist>
 
     </template>
 
