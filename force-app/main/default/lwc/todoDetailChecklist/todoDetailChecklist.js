@@ -1,4 +1,5 @@
-import {LightningElement, wire, api} from 'lwc';
+import {LightningElement, api} from 'lwc';
+import upsertAndDelete from '@salesforce/apex/SubtodoMagicController.upsertAndDelete';
 import ID_FIELD from '@salesforce/schema/Todo__c.Id';
 import NAME_FIELD from '@salesforce/schema/Todo__c.Name';
 import CATEGORY_FIELD from '@salesforce/schema/Todo__c.Category__c';
@@ -12,7 +13,7 @@ import TIME_FIELD from '@salesforce/schema/Todo__c.Time__c';
 import TODO_ID_SUBTODO from '@salesforce/schema/Subtodo__c.Todo__c';
 import NAME_SUBTODO from '@salesforce/schema/Subtodo__c.Name';
 import ID_SUBTODO from '@salesforce/schema/Subtodo__c.Id';
-
+import IS_DONE_SUBTODO from '@salesforce/schema/Subtodo__c.Is_Done__c';
 
 export default class TodoDetailChecklist extends LightningElement {
     @api incomingSubtodos
@@ -58,6 +59,7 @@ export default class TodoDetailChecklist extends LightningElement {
         })
     }
 
+// helper methods
     getRandomKey() {
         const min = Math.ceil(0);
         const max = Math.floor(this.RANDOM_KEY_CEILING);
@@ -71,7 +73,38 @@ export default class TodoDetailChecklist extends LightningElement {
     }
 
     saveChecklist() {
-        this.dispatchEvent(new CustomEvent('savechecklist', {detail: ''}));
+        const toUpsert = [];
+        const toDelete = [];
+
+        this.subtodos.forEach((sub) => {
+            const ups = {};
+            if (!sub[ID_SUBTODO.fieldApiName].includes(this.NEW_ITEM_PREFIX))
+                ups[ID_SUBTODO.fieldApiName] = sub[ID_SUBTODO.fieldApiName];
+            ups[NAME_SUBTODO.fieldApiName] = sub[NAME_SUBTODO.fieldApiName];
+            ups[TODO_ID_SUBTODO.fieldApiName] = sub[TODO_ID_SUBTODO.fieldApiName];
+            ups[IS_DONE_SUBTODO.fieldApiName] = sub [IS_DONE_SUBTODO.fieldApiName];
+            toUpsert.push(ups);
+        })
+
+        this.subtodosToDelete.forEach((sub) => {
+            const ups = {};
+            ups[ID_SUBTODO.fieldApiName] = sub[ID_SUBTODO.fieldApiName];
+            ups[NAME_SUBTODO.fieldApiName] = sub[NAME_SUBTODO.fieldApiName];
+            ups[TODO_ID_SUBTODO.fieldApiName] = sub[TODO_ID_SUBTODO.fieldApiName];
+            ups[IS_DONE_SUBTODO.fieldApiName] = sub [IS_DONE_SUBTODO.fieldApiName];
+            toDelete.push(ups);
+        })
+        console.log(toUpsert);
+        console.log(toDelete);
+
+        upsertAndDelete({toUpsert : toUpsert, toDelete : toDelete})
+            .then(result => {
+                console.log('ОК');
+                this.dispatchEvent(new CustomEvent('savechecklist', {detail: ''}));
+            })
+            .catch(error => {
+                console.log(error.body);
+            })
     }
 
 // handlers
@@ -88,6 +121,7 @@ export default class TodoDetailChecklist extends LightningElement {
     handleAddItem() {
         let subtodo = {};
         subtodo[TODO_ID_SUBTODO.fieldApiName] = this.todo[ID_FIELD.fieldApiName];
+        subtodo[IS_DONE_SUBTODO.fieldApiName] = false;
         subtodo[NAME_SUBTODO.fieldApiName] = this.newSubtodoName;
         subtodo[ID_SUBTODO.fieldApiName] = this.NEW_ITEM_PREFIX + this.index;
         this.index++;
@@ -96,7 +130,7 @@ export default class TodoDetailChecklist extends LightningElement {
         subtodo['randomKey'] = this.getRandomKey();
         this.subtodos.push(subtodo);
         this.newSubtodoName = '';
-        this.template.querySelector('lightning-input[data-name="subtodoNameInput"]').value = '';
+        // this.template.querySelector('lightning-input[data-name="subtodoNameInput"]').value = '';
         this.somethingChanged = true;
     }
 
@@ -123,8 +157,6 @@ export default class TodoDetailChecklist extends LightningElement {
             this.subtodosToDelete.push(this.subtodos[index]);
         }
         this.subtodos.splice(index, 1);
-        console.log(this.subtodos);
-        console.log(this.subtodosToDelete);
         this.subtodos.forEach((s) => {
             s['edit'] = false;
             s['allowSelection'] = true;
