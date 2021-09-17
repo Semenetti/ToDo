@@ -1,5 +1,17 @@
 <template>
 
+    <template if:true={wiredSubtodos}>
+            
+        <template if:true={detailIsOpen}>                   
+            <c-todo-detail-checklist-box 
+                incoming-todo={todo} 
+                incoming-subtodos={wiredSubtodos}
+                onsave={handleSave}
+                oncancel={handleCancel}
+            ></c-todo-detail-checklist-box>
+        </template>
+    </template>
+
     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
         <lightning-layout>
 
@@ -34,6 +46,7 @@
                     size="small"
                     variant="border-filled" 
                     alternative-text="Create new Subtodo" 
+                    onclick={detailHandle}
                 ></lightning-button-icon>
 
             </lightning-layout-item>
@@ -67,5 +80,5 @@
         </div>    
 
     </div>
-
+    
 </template>

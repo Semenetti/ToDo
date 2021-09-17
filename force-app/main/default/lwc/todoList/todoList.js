@@ -39,12 +39,23 @@ export default class TodoList extends LightningElement {
         }
     }
 
+    
+
     refreshTodos(){
         refreshApex(this.wiredTodosResult);
     }
 
     refreshSubtodos(){
         refreshApex(this.wiredSubtodosResult);
+    }
+
+    handleSave(){
+        this.refreshTodos();
+        this.refreshSubtodos();
+    }
+
+    handleCancel(){
+        console.log('cancel');
     }
 
     handleFind(event){

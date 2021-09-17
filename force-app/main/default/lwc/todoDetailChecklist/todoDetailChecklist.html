@@ -1,0 +1,48 @@
+<template>
+    <template if:true={incomingSubtodos.data}>
+    
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-check-list">
+        <div class="slds-grid">
+            <div class="slds-col slds-size_3-of-4">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_2-of-3">
+                    <p><b>{categoryValue}</b></p>
+                    </div>
+                    <div class="slds-col slds-size_2-of-3">
+                        <p><b>{priorityText}</b></p>
+                    </div>
+                </div>
+                <p>Subject: <b>{nameValue}</b></p>
+                <p>Comments: <b>{descriptionValue}</b></p>
+            </div>
+            <div class="slds-col slds-size_1-of-4">
+                <p>{dateText}</p>
+                <p><template if:true={timeText}>at <lightning-formatted-time value={timeText}></lightning-formatted-time>
+                </template>
+                </p>
+            </div>
+        </div>
+        <template if:false={subtodos}>
+            <div class="demo-only demo--inverse" style="height:6rem;position:relative">
+                <div role="status" class="slds-spinner slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={subtodos}>
+            <p>Some checklist here</p>
+        </template>
+
+    </div>
+
+
+    <footer class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" onclick={cancel}>Cancel</button>
+        <button class="slds-button slds-button_brand" onclick={saveChecklist}  disabled={disableSave}>Save changes</button>
+    </footer>
+
+    </template>
+</template>

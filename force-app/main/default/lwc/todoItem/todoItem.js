@@ -3,6 +3,8 @@ import { LightningElement, api, track } from 'lwc';
 import SUBTODO_ID_FIELD from '@salesforce/schema/Subtodo__c.Id'
 import SUBTODO_IS_DONE_FIELD from '@salesforce/schema/Subtodo__c.Is_Done__c' 
 
+import getSubtodos from '@salesforce/apex/TodoHandler.getSubtodos';
+
 import TODO_ID_FIELD from '@salesforce/schema/Todo__c.Id'
 import TODO_IS_DONE_FIELD from '@salesforce/schema/Todo__c.Is_Done__c'
 
@@ -15,11 +17,20 @@ export default class TodoItem extends LightningElement {
         this.setCheckTodoStatus(this.todo.Is_Done__c);
     }
 
+    detailIsOpen = false;
+
+    detailHandle(){
+        this.detailIsOpen = true;
+    }
+
     @api
     todo;
 
     @api
     allSubtodos;
+    
+    @api 
+    wiredSubtodos;
     
     listIsHidden = true;
     listIcon = 'utility:chevronright';
@@ -27,6 +38,16 @@ export default class TodoItem extends LightningElement {
     checkTodoBtnIsDisabled = false;
     subtodosIsDisabled = false;
     checkTodoIcon = 'utility:check';
+
+    handleCancel() {
+        this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
+        this.detailIsOpen = false;
+    }
+
+    handleSave(){
+        this.dispatchEvent(new CustomEvent('save', {detail: ''}));
+        this.detailIsOpen = false;
+    };
 
     get listIsEmpty(){
         return this.subtodos.length?false:true;
@@ -60,8 +81,6 @@ export default class TodoItem extends LightningElement {
         }); 
         this.dispatchEvent(selectEvent);
     }
-
-
 
     viewHideSubtodos(){
         if(!this.listIsHidden) {
