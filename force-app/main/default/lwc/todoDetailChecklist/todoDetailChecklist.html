@@ -1,11 +1,92 @@
 <template>
 
     <div class="slds-modal__content slds-p-around_medium" id="modal-content-check-list">
+
+
+        <div class="slds-grid">
+            <div class="slds-col slds-size_5-of-12">
+
+                <p><b>{categoryValue}</b></p>
+                <p><b>{priorityText}</b></p>
+                <br>
+                <p>Subject:</p>
+                <p><b>{nameValue}</b></p>
+                <br>
+                <template if:true={descriptionValue}>
+                    <p>Comments:</p>
+                    <p><b>{descriptionValue}</b></p>
+                    <br>
+                </template>
+                <p>{dateText}</p>
+                <p>
+                    <template if:true={timeText}> at
+                        <lightning-formatted-time value={timeText}></lightning-formatted-time>
+                    </template>
+                </p>
+                <br>
+            </div>
+
+            <div class="slds-col slds-size_7-of-12">
+                <template if:true={isEditableChecklist}>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_9-of-12">
+
+                            <lightning-input type="text" data-name="subtodoNameInput" value={newSubtodoName} placeholder="add new item here..."
+                                             onchange={handleChangeName} variant="label-hidden" disabled={disableNewItem}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12">
+                            <lightning-button-icon icon-name="utility:check" variant="brand" alternative-text="Save"
+                                                   class="slds-m-left_xx-small" title="Save" onclick={handleAddItem} disabled={disableSaveItem}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:undo" alternative-text="Clear"
+                                                   class="slds-m-left_xx-small" title="Delete" onclick={handleDismiss} disabled={disableNewItem}></lightning-button-icon>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:false={subtodos}>
+                    <div class="demo-only demo--inverse" style="height:6rem;position:relative">
+                        <div role="status" class="slds-spinner slds-spinner_medium">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={subtodos}>
+                    <template if:true={booleanToRefresh}>
+                    <template for:each={subtodos} for:item="item">
+                        <c-todo-detail-checklist-item
+                                key={item.randomKey}
+                                incoming-subtodo={item}
+                                onsaveitem={handleSaveItem}
+                                ondeleteitem={handleDeleteItem}
+                                onitemselected={handleSelectItem}
+                        >
+                        </c-todo-detail-checklist-item>
+                    </template>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" onclick={cancel}>Cancel</button>
+        <button class="slds-button slds-button_brand" onclick={saveChecklist} disabled={disableSave}>Save changes
+        </button>
+    </footer>
+</template>
+
+<!--
+<template>
+
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-check-list">
         <div class="slds-grid">
             <div class="slds-col slds-size_3-of-4">
                 <div class="slds-grid">
                     <div class="slds-col slds-size_2-of-3">
-                    <p><b>{categoryValue}</b></p>
+                        <p><b>{categoryValue}</b></p>
                     </div>
                     <div class="slds-col slds-size_2-of-3">
                         <p><b>{priorityText}</b></p>
@@ -16,8 +97,10 @@
             </div>
             <div class="slds-col slds-size_1-of-4">
                 <p>{dateText}</p>
-                <p><template if:true={timeText}>at <lightning-formatted-time value={timeText}></lightning-formatted-time>
-                </template>
+                <p>
+                    <template if:true={timeText}>at
+                        <lightning-formatted-time value={timeText}></lightning-formatted-time>
+                    </template>
                 </p>
             </div>
         </div>
@@ -32,7 +115,13 @@
         </template>
 
         <template if:true={subtodos}>
-            <p>Some checklist here</p>
+            <template for:each={subtodos} for:item="item">
+                <c-todo-detail-checklist-item
+                        key={item.Id}
+                        item={item}
+                        onlistitemclick={handleListItemClick}>
+                </c-todo-detail-checklist-item>
+            </template>
         </template>
 
     </div>
@@ -40,6 +129,9 @@
 
     <footer class="slds-modal__footer">
         <button class="slds-button slds-button_neutral" onclick={cancel}>Cancel</button>
-        <button class="slds-button slds-button_brand" onclick={saveChecklist}  disabled={disableSave}>Save changes</button>
+        <button class="slds-button slds-button_brand" onclick={saveChecklist} disabled={disableSave}>Save changes
+        </button>
     </footer>
 </template>
+
+-->

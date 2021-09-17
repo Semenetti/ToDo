@@ -1,0 +1,42 @@
+<template>
+    <div class="container">
+        <template if:true={incomingSubtodo}>
+            <template if:false={showEdit}>
+                <template if:true={allowSelection}>
+                <a onclick={handleItemClick}>
+                    <lightning-input type="checkbox" label={incomingSubtodo.Name} name="inputName"
+                                     checked={checked}
+                                     value={checked}
+                                     onchange={handleChangeIsPriority} disabled="true"></lightning-input>
+                </a>
+                </template>
+                <template if:false={allowSelection}>
+                        <lightning-input type="checkbox" label={incomingSubtodo.Name} name="inputName"
+                                         checked={checked}
+                                         value={checked}
+                                         onchange={handleChangeIsPriority} disabled="true"></lightning-input>
+                </template>
+            </template>
+            <template if:true={showEdit}>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_9-of-12">
+
+                        <lightning-input type="text" value={incomingSubtodo.Name} onchange={handleChangeName}
+                                         variant="label-hidden"></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12">
+                        <lightning-button-icon icon-name="utility:check" variant="brand" alternative-text="Save"
+                                               class="slds-m-left_xx-small" title="Save" onclick={handleSaveChanges}
+                                               disabled={disableSave}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:delete" alternative-text="Delete"
+                                               class="slds-m-left_xx-small" title="Delete"
+                                               onclick={handleDelete}></lightning-button-icon>
+                    </div>
+                </div>
+
+            </template>
+        </template>
+    </div>
+</template>
+
+
