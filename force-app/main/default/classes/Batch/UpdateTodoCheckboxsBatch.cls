@@ -1,4 +1,4 @@
-public with sharing class TodoTriggerHelper {
+public with sharing class UpdateTodoCheckboxsBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     private final static Map<String, Integer> DAY_OF_WEEK_TO_INT = new Map<String, Integer>{
         'Sun' => 1,
@@ -8,23 +8,15 @@ public with sharing class TodoTriggerHelper {
         'Thu' => 5,
         'Fri' => 6,
         'Sat' => 7
-    };
+    }; 
 
-    public static void addTodoInQueue(List<Todo__c> newList){
-
-        Map<Id, Id> recordTypeToQueueIdMap = RecordTypeToQueue.getRecordTypeToQueueIdMap();
-
-        for(Todo__c todo : newList) {
-            todo.OwnerId = recordTypeToQueueIdMap.get(todo.RecordTypeId);
-        }
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator(
+            'SELECT Id,	Is_Today__c, Is_Tomorrow__c, Is_Periodic_Task__c, Days_of_Week__c, Completion_Date__c FROM Todo__c'
+        );
     }
 
-
-    public static void setTodayTomorrowCheckboxs(List<Todo__c> todos){
-
-        if(Test.isRunningTest()) {
-            return;
-        }
+    public void execute(Database.BatchableContext bc, List<Todo__c> todos){
 
         List<Todo__c> todoToUpdate = new List<Todo__c>();
 
@@ -69,36 +61,10 @@ public with sharing class TodoTriggerHelper {
             todoToUpdate.add(todo);
         }
 
-        //update todoToUpdate;
+        update todoToUpdate;
     }
 
-    public static void createTodoFutureCallout(List<Todo__c> todos){
-        if(!Test.isRunningTest()){
-            createTodoCallout(JSON.serialize(todos));    
-        } 
-    }
-
-    @future(callout=true)
-    private static void createTodoCallout(String jsonStr){
-        List<Todo__c> todos = (List<Todo__c>) JSON.deserialize(jsonStr, List<Todo__c>.class);
-        TodoCallout.createTodo(todos);     
-    }
-
-    public static void deleteTodoFutureCallout(List<Todo__c> todos){
-        if(!Test.isRunningTest()){
-            List<Id> idList = new List<Id>();
-            for(Todo__c todo : todos) {
-                idList.add(todo.Id);
-            }
-            deleteTodoCallout(idList);
-        }
-    }
-
-    @future(callout=true)
-    private static void deleteTodoCallout(List<Id> idList){
-        for(Id id : idList){
-            TodoCallout.deleteTodoById(id);
-        }
+    public void finish(Database.BatchableContext bc){
     }
 
 }
