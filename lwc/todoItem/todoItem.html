@@ -1,26 +1,84 @@
 <template>
 
-    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
-        
-        <lightning-button-icon 
-            icon-name={listIcon} 
-            size="small"
-            variant="bare"
-            onclick={viewHideSubtodos} 
-            disabled={listIsEmpty}
-            style="margin-top: -7px;"
-        ></lightning-button-icon>
+    <template if:true={wiredSubtodos}>
+            
+        <template if:true={detailIsOpen}>                   
+            <c-todo-detail-checklist-box 
+                incoming-todo={todo} 
+                incoming-subtodos={wiredSubtodos}
+                onsave={handleSave}
+                oncancel={handleCancel}
+            ></c-todo-detail-checklist-box>
+        </template>
+    </template>
 
-        <span class="todoFont"> {todo.Name} </span>
+    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
+        <lightning-layout>
+
+            <lightning-layout-item flexibility="grow">
+
+                <lightning-button-icon 
+                    icon-name={listIcon} 
+                    size="small"
+                    variant="bare"
+                    onclick={viewHideSubtodos} 
+                    disabled={listIsEmpty} 
+                    class="showListBtn"
+                ></lightning-button-icon>
+        
+                <span class="todoFont"> {todo.Name} </span>
+
+            </lightning-layout-item>
+
+            <lightning-layout-item>
+
+                <lightning-button-icon  
+                    icon-name={checkTodoIcon}
+                    size="small"
+                    variant="border-filled"
+                    alternative-text="Check this todo"
+                    onclick={checkTodo}
+                    disabled={checkTodoBtnIsDisabled}
+                ></lightning-button-icon>
+
+                <lightning-button-icon  
+                    icon-name="utility:add" 
+                    size="small"
+                    variant="border-filled" 
+                    alternative-text="Create new Subtodo" 
+                    onclick={detailHandle}
+                ></lightning-button-icon>
+
+            </lightning-layout-item>
+
+        </lightning-layout>
         
         <div hidden={listIsHidden}>
             <template for:each={subtodos} for:item=subtodo>
                 <div key={subtodo.Id} class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
-                    <p>{subtodo.Name}</p>
+                    <lightning-layout>
+
+                        <lightning-layout-item flexibility="grow"> 
+                            <p>{subtodo.Name}</p>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item>
+                            <lightning-input 
+                                type="checkbox" 
+                                class="subtodocheckbox" 
+                                checked={subtodo.Is_Done__c} 
+                                data-subtodoid={subtodo.Id} 
+                                onchange={handleSubtodoCheckbox}
+                                disabled={subtodosIsDisabled}
+                            ></lightning-input>
+                        </lightning-layout-item>
+
+                    </lightning-layout>
+                    
                 </div>
             </template>
         </div>    
 
     </div>
-
+    
 </template>

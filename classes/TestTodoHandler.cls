@@ -7,10 +7,10 @@ private class TestTodoHandler {
         todo.Name = 'test';
         insert todo;
 
-        Subtodo__c subtodo = new Subtodo__c();
-        subtodo.Name = 'subtest';
-        subtodo.Todo__c = todo.Id;
-        insert subtodo;
+        Subtodo__c subTodo = new Subtodo__c();
+        subTodo.Name = 'subtest';
+        subTodo.Todo__c = todo.Id;
+        insert subTodo;
 
         Test.startTest();
             System.assertEquals(1, TodoHandler.getTodosListWithFindKey('').size());

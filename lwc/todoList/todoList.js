@@ -1,6 +1,7 @@
 import { LightningElement, wire, api } from 'lwc';
 import getTodosListWithFindKey from '@salesforce/apex/TodoHandler.getTodosListWithFindKey';
 import getSubtodos from '@salesforce/apex/TodoHandler.getSubtodos';
+import { refreshApex } from '@salesforce/apex';
 
 export default class TodoList extends LightningElement {
     
@@ -13,15 +14,15 @@ export default class TodoList extends LightningElement {
     wiredSubtodosResult;
 
     findKey = '';
+    isToday = false;
+    isTomorrow = false;
 
-    @wire(getTodosListWithFindKey, {findKey : '$findKey'})
+    @wire(getTodosListWithFindKey, {findKey : '$findKey', isToday : '$isToday', isTomorrow : '$isTomorrow'})
     wiredTodos(result){ 
         this.wiredTodosResult = result;
         if (result.data) {
             this.todos = result.data;
             this.error = undefined;
-            console.log(this.todos);
-        
         } else if (result.error) {
             this.error = result.error;
             this.todos = undefined;
@@ -34,17 +35,35 @@ export default class TodoList extends LightningElement {
         if(result.data) {
             this.subtodos = result.data;
             this.error = undefined;
-            console.log(this.subtodos);
         } else if (result.error) {
             this.error = result.error;
             this.todos = undefined;
         }
     }
 
-    @api
-    refreshList(){
+    handleTomorrow(event){
+        this.isTomorrow = event.target.checked;
+    }
+
+    handleToday(event){
+        this.isToday = event.target.checked;
+    }
+
+    refreshTodos(){
         refreshApex(this.wiredTodosResult);
+    }
+
+    refreshSubtodos(){
         refreshApex(this.wiredSubtodosResult);
+    }
+
+    handleSave(){
+        this.refreshTodos();
+        this.refreshSubtodos();
+    }
+
+    handleCancel(){
+        console.log('cancel');
     }
 
     handleFind(event){
@@ -54,4 +73,6 @@ export default class TodoList extends LightningElement {
             this.findKey = findKey;
         }, 300);
     }
+
+
 }
