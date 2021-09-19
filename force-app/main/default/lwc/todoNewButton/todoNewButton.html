@@ -1,0 +1,12 @@
+<template>
+    <lightning-button-icon 
+        onclick={showModal} 
+        icon-name="utility:add" 
+        variant="border-filled" 
+        alternative-text="Create new Todo" 
+        slot="actions"
+    ></lightning-button-icon>
+    <template if:true={openModal}>
+        <c-todo-new onsave={handleSave} oncancel={handleCancel}></c-todo-new>
+    </template>
+</template>

@@ -18,6 +18,8 @@ export default class TodoList extends LightningElement {
     isTomorrow = false;
 
     @wire(getTodosListWithFindKey, {findKey : '$findKey', isToday : '$isToday', isTomorrow : '$isTomorrow'})
+
+    @wire(getTodosListWithFindKey, {findKey : '$findKey'})
     wiredTodos(result){ 
         this.wiredTodosResult = result;
         if (result.data) {
@@ -48,6 +50,8 @@ export default class TodoList extends LightningElement {
     handleToday(event){
         this.isToday = event.target.checked;
     }
+
+    
 
     refreshTodos(){
         refreshApex(this.wiredTodosResult);

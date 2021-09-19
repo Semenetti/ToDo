@@ -38,6 +38,7 @@ export default class TodoItem extends LightningElement {
     checkTodoBtnIsDisabled = false;
     subtodosIsDisabled = false;
     checkTodoIcon = '';
+    checkTodoIcon = 'utility:check';
 
     handleCancel() {
         this.dispatchEvent(new CustomEvent('cancel', {detail: ''}));
@@ -121,6 +122,12 @@ export default class TodoItem extends LightningElement {
         } 
         else {
             this.checkTodoIcon = '';
+
+            this.checkTodoIcon = 'utility:close';
+            this.subtodosIsDisabled = true;
+        } 
+        else {
+            this.checkTodoIcon = 'utility:check';
             this.subtodosIsDisabled = false;
         }
     }

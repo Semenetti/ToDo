@@ -42,10 +42,16 @@
                 ></lightning-button-icon>
 
                 <lightning-button-icon  
+
                     icon-name="utility:description" 
                     size="small"
                     variant="border-filled" 
                     alternative-text="Details" 
+
+                    icon-name="utility:add" 
+                    size="small"
+                    variant="border-filled" 
+                    alternative-text="Create new Subtodo" 
                     onclick={detailHandle}
                 ></lightning-button-icon>
 
@@ -56,6 +62,8 @@
         <div hidden={listIsHidden}>
             <template for:each={subtodos} for:item=subtodo>
                 <div key={subtodo.Id} class="slds-text-align_left todoItem">
+
+                <div key={subtodo.Id} class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small">
                     <lightning-layout>
 
                         <lightning-layout-item flexibility="grow"> 
@@ -69,11 +77,14 @@
                                 checked={subtodo.Is_Done__c} 
                                 data-subtodoid={subtodo.Id} 
                                 onclick={handleSubtodoCheckbox}
+
+                                onchange={handleSubtodoCheckbox}
                                 disabled={subtodosIsDisabled}
                             ></lightning-input>
                         </lightning-layout-item>
 
                     </lightning-layout>
+                    
                 </div>
             </template>
         </div>    
