@@ -14,6 +14,10 @@ export default class TodoList extends LightningElement {
     wiredSubtodosResult;
 
     findKey = '';
+    isToday = false;
+    isTomorrow = false;
+
+    @wire(getTodosListWithFindKey, {findKey : '$findKey', isToday : '$isToday', isTomorrow : '$isTomorrow'})
 
     @wire(getTodosListWithFindKey, {findKey : '$findKey'})
     wiredTodos(result){ 
@@ -37,6 +41,14 @@ export default class TodoList extends LightningElement {
             this.error = result.error;
             this.todos = undefined;
         }
+    }
+
+    handleTomorrow(event){
+        this.isTomorrow = event.target.checked;
+    }
+
+    handleToday(event){
+        this.isToday = event.target.checked;
     }
 
     

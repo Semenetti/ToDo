@@ -10,11 +10,22 @@
 
                     <!--Find-->
                     <lightning-input label="Find By Name" onchange={handleFind} type="search" class="slds-m-around--x-small"></lightning-input>
+                    
+                    <lightning-layout>
+                        <!--Today-->
+                        <lightning-input label="Today" type="checkbox" onchange={handleToday} value={isToday} class="slds-m-around--x-small"></lightning-input>
+
+                        <!--Tomorrow-->
+                        <lightning-input label="Tomorrow" type="checkbox" onchange={handleTomorrow} value={isTomorrow} class="slds-m-around--x-small"></lightning-input>
+                    </lightning-layout>
+                   
+
 
                     <!--List-->
                     <template for:each={todos} for:item=todo>
                         <c-todo-item key={todo.Id} todo={todo} all-subtodos={subtodos} wired-subtodos={wiredSubtodosResult}></c-todo-item>
                     </template>
+
                 </template>
             </template>
       

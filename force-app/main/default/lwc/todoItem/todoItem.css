@@ -18,4 +18,11 @@ lightning-button-icon{
 .subtodocheckbox{
     position: relative;
     left: 15px;
+
+}
+
+.todoItem:hover{
+    text-decoration:underline;
+    cursor: default;
+
 }
