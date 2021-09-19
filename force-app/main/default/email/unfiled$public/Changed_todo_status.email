@@ -1,0 +1,19 @@
+<messaging:emailTemplate subject="Todo status has changed!" recipientType="User" relatedToType="Todo__c">
+<messaging:htmlEmailBody >
+    <html>
+        <body>
+            <p>Hello!</p>
+    
+            <h3>Todo status has changed!</h3>
+            <div style="margin-left: 25px">
+                <p><strong>Todo:</strong> {!relatedto.Name}</p>
+                <p><strong>Status:</strong> {!relatedto.Is_Done__c}</p>
+            </div>
+    
+            <p style="padding-top: 25px">
+                <span style="font-style: italic">Thank you,</span>
+                <br />Your salesforce administrator</p>
+        </body>
+    </html>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>
